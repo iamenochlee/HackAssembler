@@ -1,0 +1,7 @@
+.vscode
+prog.dSYM
+build.sh
+bin
+Add.asm
+guide.txt
+.DS_Store
