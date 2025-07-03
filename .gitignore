@@ -1,7 +1,7 @@
 .vscode
 prog.dSYM
-build.sh
 bin
-Add.asm
+test
 guide.txt
 .DS_Store
+todo.txt
