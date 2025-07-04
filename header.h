@@ -8,6 +8,7 @@
 #define TWO_MB (2 << 20)
 
 #define READ_FLAGS "r"
+#define WRITE_FLAGS "w"
 
 struct Label
 {
@@ -41,6 +42,7 @@ int get_instruction_type(char *line);
 // label
 void add_label(char *lname, int lvalue);
 void get_label(const char *source, char *target);
+int allocate_variable(char *variable_name);
 
 // lookup table
 int get_lvalue(struct Label table[], int table_count, char *lname);

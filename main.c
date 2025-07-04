@@ -4,6 +4,8 @@ int instructions[MAX_LINE * MAX_LINE];
 int iinstr = -1;
 
 int label_count = 23;
+int next_variable_address = 16; // Start variable allocation at address 16
+
 struct Label LabelTable[MAX_LINE * MAX_LINE] = {
     {"R0", 0}, {"R1", 1}, {"R2", 2}, {"R3", 3}, {"R4", 4}, {"R5", 5}, {"R6", 6}, {"R7", 7}, {"R8", 8}, {"R9", 9}, {"R10", 10}, {"R11", 11}, {"R12", 12}, {"R13", 13}, {"R14", 14}, {"R15", 15}, {"SP", 0}, {"LCL", 1}, {"ARG", 2}, {"THIS", 3}, {"THAT", 4}, {"SCREEN", 16384}, {"KBD", 24576}};
 
@@ -75,13 +77,23 @@ int main(int argc, char *argv[])
   }
 
   FILE *file = open_file(argv[1]);
-  long size = get_fsize(file);
-  char *buffer = malloc(size);
 
   __init(file);
+
+  // Allocate buffer for output: each instruction becomes 17 chars (16 binary + newline)
+  int output_size = (iinstr + 1) * 17 + 1; // +1 for null terminator
+  char *buffer = malloc(output_size);
+  if (buffer == NULL)
+  {
+    fprintf(stderr, "Error: Failed to allocate output buffer of size %d\n", output_size);
+    fclose(file);
+    return 1;
+  }
+
+  printf("Processing %d instructions, allocated %d bytes for output\n", iinstr + 1, output_size);
   compile(file, buffer);
 
-  FILE *outfile = fopen(argv[2], "w");
+  FILE *outfile = fopen(argv[2], WRITE_FLAGS);
   if (outfile == NULL)
   {
     perror("Failed to open output file");
@@ -92,14 +104,17 @@ int main(int argc, char *argv[])
   fputs(buffer, outfile);
   fclose(outfile);
 
+  printf("Compiled Successfully!\n");
+
   return 0;
 }
 
 void compile(FILE *file, char *buffer)
 {
 
-  buffer[0] = '\0';   // Initialize empty string
-  int buffer_pos = 0; // Track current position in buffer
+  buffer[0] = '\0';                        // Initialize empty string
+  int buffer_pos = 0;                      // Track current position in buffer
+  int buffer_size = (iinstr + 1) * 17 + 1; // Same calculation as in main
 
   for (int i = 0; i <= iinstr; i++)
   {
@@ -117,7 +132,7 @@ void compile(FILE *file, char *buffer)
       *comment_start = '\0';
     }
 
-    printf("Instruction %d (line %d): %s\n", i + 1, instructions[i], line_no_whitespace);
+    // printf("Instruction %d (line %d): %s\n", i + 1, instructions[i], line_no_whitespace);
 
     if (get_instruction_type(line_no_whitespace))
     {
@@ -166,7 +181,7 @@ void compile(FILE *file, char *buffer)
         strcpy(jump, line_no_whitespace + comp_start + 1); // Copy after ';'
       }
 
-      printf("dest: %s, comp: %s, jump: %s\n", dest, comp, jump);
+      // printf("dest: %s, comp: %s, jump: %s\n", dest, comp, jump);
 
       // Generate C-instruction binary
       int comp_value = get_lvalue(CompTable, comp_count, comp);
@@ -188,6 +203,11 @@ void compile(FILE *file, char *buffer)
         int_to_bin(jump_value, output, 13, 15);
 
         // Append to buffer
+        if (buffer_pos + 17 >= buffer_size)
+        {
+          fprintf(stderr, "Error: Buffer overflow at instruction %d\n", i + 1);
+          exit(EXIT_FAILURE);
+        }
         strcpy(buffer + buffer_pos, output);
         buffer_pos += 16; // Move position by 16 characters
         strcpy(buffer + buffer_pos, "\n");
@@ -219,13 +239,20 @@ void compile(FILE *file, char *buffer)
       }
       else
       {
-        fprintf(stderr, "Error: Unknown label '%s' at instruction %d\n", line_no_whitespace + 1, i + 1);
-        exit(EXIT_FAILURE);
+        // Check if this is a variable that needs to be allocated
+        char *symbol = line_no_whitespace + 1;
+        int allocated_address = allocate_variable(symbol);
+        int_to_bin(allocated_address, output, 1, 15);
       }
 
       output[16] = '\0';
 
       // Append to buffer
+      if (buffer_pos + 17 >= buffer_size)
+      {
+        fprintf(stderr, "Error: Buffer overflow at instruction %d\n", i + 1);
+        exit(EXIT_FAILURE);
+      }
       strcpy(buffer + buffer_pos, output);
       buffer_pos += 16;
       strcpy(buffer + buffer_pos, "\n");
@@ -271,6 +298,11 @@ void __init(FILE *file)
     else
     {
       iinstr++;
+      if (iinstr >= MAX_LINE * MAX_LINE)
+      {
+        fprintf(stderr, "Error: Too many instructions. Maximum is %d\n", MAX_LINE * MAX_LINE);
+        exit(EXIT_FAILURE);
+      }
       instructions[iinstr] = ln;
     }
 
