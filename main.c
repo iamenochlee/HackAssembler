@@ -6,6 +6,10 @@ int iinstr = -1;
 int label_count = 23;
 int next_variable_address = 16; // Start variable allocation at address 16
 
+// Command line flags
+int DEBUG_MODE = 0;   // -d flag for debug output
+int VERBOSE_MODE = 0; // -v flag for verbose output
+
 struct Label LabelTable[MAX_LINE * MAX_LINE] = {
     {"R0", 0}, {"R1", 1}, {"R2", 2}, {"R3", 3}, {"R4", 4}, {"R5", 5}, {"R6", 6}, {"R7", 7}, {"R8", 8}, {"R9", 9}, {"R10", 10}, {"R11", 11}, {"R12", 12}, {"R13", 13}, {"R14", 14}, {"R15", 15}, {"SP", 0}, {"LCL", 1}, {"ARG", 2}, {"THIS", 3}, {"THAT", 4}, {"SCREEN", 16384}, {"KBD", 24576}};
 
@@ -70,18 +74,57 @@ struct Label JumpTable[jump_count] = {
 
 int main(int argc, char *argv[])
 {
-  if (argc != 3)
+  char *input_file = NULL;
+  char *output_file = NULL;
+
+  // Parse command line arguments
+  for (int i = 1; i < argc; i++)
   {
-    fputs("Usage: ./prog <input.asm> <output.hack>\n", stderr);
+    if (strcmp(argv[i], "-d") == 0)
+    {
+      DEBUG_MODE = 1;
+    }
+    else if (strcmp(argv[i], "-v") == 0)
+    {
+      VERBOSE_MODE = 1;
+    }
+    else if (argv[i][0] == '-')
+    {
+      fprintf(stderr, "Unknown option: %s\n", argv[i]);
+      fputs("Usage: ./prog [-d] [-v] <input.asm> <output.hack>\n", stderr);
+      fputs("  -d: Enable debug output for invalid instructions\n", stderr);
+      fputs("  -v: Enable verbose output showing all instructions\n", stderr);
+      return 1;
+    }
+    else if (input_file == NULL)
+    {
+      input_file = argv[i];
+    }
+    else if (output_file == NULL)
+    {
+      output_file = argv[i];
+    }
+    else
+    {
+      fputs("Too many arguments.\n", stderr);
+      fputs("Usage: ./prog [-d] [-v] <input.asm> <output.hack>\n", stderr);
+      return 1;
+    }
+  }
+
+  if (input_file == NULL || output_file == NULL)
+  {
+    fputs("Usage: ./prog [-d] [-v] <input.asm> <output.hack>\n", stderr);
+    fputs("  -d: Enable debug output for invalid instructions\n", stderr);
+    fputs("  -v: Enable verbose output showing all instructions\n", stderr);
     return 1;
   }
 
-  FILE *file = open_file(argv[1]);
+  FILE *file = open_file(input_file);
 
   __init(file);
 
-  // Allocate buffer for output: each instruction becomes 17 chars (16 binary + newline)
-  int output_size = (iinstr + 1) * 17 + 1; // +1 for null terminator
+  int output_size = (iinstr + 1) * 17;
   char *buffer = malloc(output_size);
   if (buffer == NULL)
   {
@@ -90,10 +133,10 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  printf("Processing %d instructions, allocated %d bytes for output\n", iinstr + 1, output_size);
+  printf("Compiling %d instructions, allocated %d bytes for output\n", iinstr + 1, output_size);
   compile(file, buffer);
 
-  FILE *outfile = fopen(argv[2], WRITE_FLAGS);
+  FILE *outfile = fopen(output_file, WRITE_FLAGS);
   if (outfile == NULL)
   {
     perror("Failed to open output file");
@@ -112,9 +155,9 @@ int main(int argc, char *argv[])
 void compile(FILE *file, char *buffer)
 {
 
-  buffer[0] = '\0';                        // Initialize empty string
-  int buffer_pos = 0;                      // Track current position in buffer
-  int buffer_size = (iinstr + 1) * 17 + 1; // Same calculation as in main
+  buffer[0] = '\0';
+  int buffer_pos = 0;
+  int buffer_size = (iinstr + 1) * 17 + 1;
 
   for (int i = 0; i <= iinstr; i++)
   {
@@ -132,7 +175,10 @@ void compile(FILE *file, char *buffer)
       *comment_start = '\0';
     }
 
-    // printf("Instruction %d (line %d): %s\n", i + 1, instructions[i], line_no_whitespace);
+    if (VERBOSE_MODE)
+    {
+      printf("Instruction %d (line %d): %s\n", i + 1, instructions[i] + 1, line_no_whitespace);
+    }
 
     if (get_instruction_type(line_no_whitespace))
     {
@@ -181,8 +227,6 @@ void compile(FILE *file, char *buffer)
         strcpy(jump, line_no_whitespace + comp_start + 1); // Copy after ';'
       }
 
-      // printf("dest: %s, comp: %s, jump: %s\n", dest, comp, jump);
-
       // Generate C-instruction binary
       int comp_value = get_lvalue(CompTable, comp_count, comp);
       int dest_value = get_lvalue(DestTable, dest_count, dest);
@@ -215,7 +259,11 @@ void compile(FILE *file, char *buffer)
       }
       else
       {
-        fprintf(stderr, "Error: Invalid C-instruction at instruction %d\n", i + 1);
+        if (DEBUG_MODE || VERBOSE_MODE)
+        {
+          fprintf(stderr, "Debug: dest='%s', comp='%s', jump='%s'\n", dest, comp, jump);
+        }
+        fprintf(stderr, "Error: Invalid C-instruction at line %d\n'%s'\n", instructions[i] + 1, line_no_whitespace);
         exit(EXIT_FAILURE);
       }
 
