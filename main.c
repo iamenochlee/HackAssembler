@@ -13,8 +13,8 @@ int VERBOSE_MODE = 0; // -v flag for verbose output
 struct Label LabelTable[MAX_LINE * MAX_LINE] = {
     {"R0", 0}, {"R1", 1}, {"R2", 2}, {"R3", 3}, {"R4", 4}, {"R5", 5}, {"R6", 6}, {"R7", 7}, {"R8", 8}, {"R9", 9}, {"R10", 10}, {"R11", 11}, {"R12", 12}, {"R13", 13}, {"R14", 14}, {"R15", 15}, {"SP", 0}, {"LCL", 1}, {"ARG", 2}, {"THIS", 3}, {"THAT", 4}, {"SCREEN", 16384}, {"KBD", 24576}};
 
-const int comp_count = 28;
-struct Label CompTable[28] = {
+#define comp_count 28
+struct Label CompTable[comp_count] = {
     // a=0 computations (using A)
     {"0", 42},   // 0101010
     {"1", 63},   // 0111111
@@ -48,7 +48,7 @@ struct Label CompTable[28] = {
     {"D|M", 85}   // 1010101
 };
 
-const int dest_count = 8;
+#define dest_count 8
 struct Label DestTable[dest_count] = {
     {"", 0},   // null = 000
     {"M", 1},  // M = 001
@@ -60,7 +60,7 @@ struct Label DestTable[dest_count] = {
     {"AMD", 7} // AMD = 111
 };
 
-const int jump_count = 8;
+#define jump_count 8
 struct Label JumpTable[jump_count] = {
     {"", 0},    // null = 000
     {"JGT", 1}, // JGT = 001
@@ -149,6 +149,8 @@ int main(int argc, char *argv[])
 
   printf("Compiled Successfully!\n");
 
+  free(buffer);
+  fclose(file);
   return 0;
 }
 
