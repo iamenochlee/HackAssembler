@@ -40,7 +40,7 @@ int get_instruction_type(char *line);
 
 // label
 void add_label(char *lname, int lvalue);
-void get_label(const char *source, char *target);
+int get_label(const char *source, char *target);
 int allocate_variable(char *variable_name);
 
 // lookup table

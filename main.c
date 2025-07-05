@@ -337,7 +337,13 @@ void __init(FILE *file)
     if (check_if_label(line_no_whitespace))
     {
       char *target = malloc(MAX_LINE);
-      get_label(line_no_whitespace, target);
+      if (get_label(line_no_whitespace, target))
+      {
+        fprintf(stderr, "Error: Invalid label declaration'%s' at line %d\n", line_no_whitespace, ln + 1);
+        free(target);
+        free(line_no_whitespace);
+        exit(EXIT_FAILURE);
+      }
       add_label(target, pc);
       free(target);
       free(line_no_whitespace);
