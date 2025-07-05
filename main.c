@@ -255,7 +255,7 @@ void compile(FILE *file, char *buffer)
           exit(EXIT_FAILURE);
         }
         strcpy(buffer + buffer_pos, output);
-        buffer_pos += 16; // Move position by 16 characters
+        buffer_pos += INSTRUCTION_BITS; // Move position by 16 characters
         strcpy(buffer + buffer_pos, "\n");
         buffer_pos += 1; // Move position by 1 for newline
       }
@@ -304,7 +304,7 @@ void compile(FILE *file, char *buffer)
         exit(EXIT_FAILURE);
       }
       strcpy(buffer + buffer_pos, output);
-      buffer_pos += 16;
+      buffer_pos += INSTRUCTION_BITS;
       strcpy(buffer + buffer_pos, "\n");
       buffer_pos += 1;
     }

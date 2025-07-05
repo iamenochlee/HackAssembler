@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "../header.h"
 
 FILE *open_file(char *filename)
