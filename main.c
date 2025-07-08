@@ -1,4 +1,5 @@
 #include "header.h"
+#include <pthread.h>
 
 IntArray instructions;
 LabelArray label_table;
@@ -13,6 +14,7 @@ int VERBOSE_MODE = 0; // -v flag for verbose output
 
 int main(int argc, char *argv[])
 {
+
   char *input_file = NULL;
   char *output_file = NULL;
 
@@ -101,14 +103,17 @@ int main(int argc, char *argv[])
 void compile(FILE *file, char *buffer)
 {
 
+  rewind(file);
+
   buffer[0] = '\0';
   int buffer_pos = 0;
   int buffer_size = instructions.size * 17 + 1;
 
+  int current_line = 0;
+
   for (int i = 0; i < instructions.size; i++)
   {
-    int current_line = 0;
-    rewind(file);
+
     char line[MAX_LINE];
     get_line_by_number_sequential(file, line, sizeof(line), instructions.data[i], &current_line);
     strip_line_endings(line); // Remove \r and \n
