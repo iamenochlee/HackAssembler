@@ -14,11 +14,11 @@ typedef struct AssemblerResult {
 AssemblerResult *assemble(char *source);
 
 enum LineType {
-  PARSED_A_INSTRUCTION,
-  PARSED_C_INSTRUCTION,
-  PARSED_LABEL,
   PARSED_COMMENT,
-  PARSED_INVALID
+  PARSED_INVALID,
+  PARSED_LABEL,
+  PARSED_A_INSTRUCTION,
+  PARSED_C_INSTRUCTION
 };
 
 struct ParseResult {

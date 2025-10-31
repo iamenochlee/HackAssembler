@@ -25,34 +25,32 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
 
       union InstructionEntry instr;
       instr.aValue = atoi(result->instruction);
-      free(result->instruction);
       add_instruction(instructions, A_INSTR, instr);
 
-    } else {
-      int sym_value = get_symbol_value(symbols, result->instruction);
-      if (sym_value != -1) {
-
-        union InstructionEntry instr;
-        instr.aValue = sym_value;
-        free(result->instruction);
-        add_instruction(instructions, A_INSTR, instr);
-
-      } else {
-
-        union InstructionEntry instr;
-        instr.aValue = DEFAULT_LABEL_VALUE;
-        add_instruction(instructions, A_INSTR, instr);
-        add_unresolved_symbol(unresolved_symbols, result->instruction,
-                              instructions->count - 1);
-        add_diagnostic(diagnostics, WARNING, line_num, result->instruction);
-      }
+      free(result->instruction);
+      return;
     }
 
+    int sym_value = get_symbol_value(symbols, result->instruction);
+    if (sym_value != -1) {
+
+      union InstructionEntry instr;
+      instr.aValue = sym_value;
+      add_instruction(instructions, A_INSTR, instr);
+
+      free(result->instruction);
+      return;
+    }
+
+    union InstructionEntry instr;
+    instr.aValue = DEFAULT_LABEL_VALUE;
+    add_instruction(instructions, A_INSTR, instr);
+    add_unresolved_symbol(unresolved_symbols, result->instruction,
+                          instructions->count - 1);
     return;
   }
 
   case PARSED_C_INSTRUCTION: {
-
     char *dest = malloc(4), *comp = malloc(4), *jump = malloc(4);
     get_dest_comp_jump(result->instruction, dest, comp, jump);
 
@@ -74,14 +72,13 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
       return;
     }
 
-    free(result->instruction);
-
     union InstructionEntry instr;
     instr.cInstruction.comp = comp;
     instr.cInstruction.dest = dest;
     instr.cInstruction.jump = jump;
-
     add_instruction(instructions, C_INSTR, instr);
+
+    free(result->instruction);
     return;
   }
   }

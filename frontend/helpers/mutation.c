@@ -1,5 +1,7 @@
 #include "../include/helpers.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 extern int next_variable_address;
 
@@ -41,6 +43,7 @@ void add_diagnostic(Vector *diagnostics, enum DiagnosticType type, int line_num,
   struct Diagnostic *diagnos = malloc(sizeof(struct Diagnostic));
 
   diagnos->type = type;
+  diagnos->line = line_num;
   diagnos->message = message;
   Vector__add(diagnostics, diagnos);
 };
@@ -49,11 +52,20 @@ void resolve_symbols(Map *symbols, Map *unresolved_symbols,
                      Vector *instructions, Vector *diagnostics) {
 
   for (int i = 0; i < unresolved_symbols->size; i++) {
-    int aValue = get_symbol_value(symbols, unresolved_symbols->data[i].key + 1);
 
+    int aValue = get_symbol_value(symbols, unresolved_symbols->data[i].key);
     if (aValue == -1) {
-      add_variable(symbols, unresolved_symbols->data[i].key + 1);
-      add_diagnostic(diagnostics, WARNING, 0, "variable");
+
+      add_variable(symbols, unresolved_symbols->data[i].key);
+
+      const char *key = unresolved_symbols->data[i].key;
+      const char *prefix = "variable ";
+      size_t msg_len = strlen(prefix) + strlen(key) + 1;
+      char *msg = malloc(msg_len);
+      if (msg) {
+        snprintf(msg, msg_len, "%s%s", prefix, key);
+        add_diagnostic(diagnostics, WARNING, 0, msg);
+      }
       aValue = next_variable_address - 1;
     }
 

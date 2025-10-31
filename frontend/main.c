@@ -63,6 +63,16 @@ int main(int argc, const char **args) {
   printf("a-instr: %d, c-instr: %d, total: %d\n", a_count, c_count,
          res->instructions->count);
 
+  // Print diagnostics with colors: red for errors, yellow for warnings
+  for (int i = 0; i < res->diagnostics->count; i++) {
+    struct Diagnostic *d = res->diagnostics->items[i];
+    const char *color =
+        d->type == ERROR ? "\x1b[31m" : "\x1b[33m"; // red / yellow
+    const char *type_str = d->type == ERROR ? "error" : "warning";
+    fprintf(stderr, "%s%s: line %d: %s\x1b[0m\n", color, type_str, d->line,
+            d->message);
+  }
+
   // TODO: free(res and internals) if you add a destructor; for now just exit.
   free(source);
   return 0;
