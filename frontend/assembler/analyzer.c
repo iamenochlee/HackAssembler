@@ -56,19 +56,16 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
 
     if (!is_valid_dest(dests, dest)) {
       add_diagnostic(diagnostics, ERROR, line_num, result->instruction);
-      free(result->instruction);
       return;
     }
 
     if (!is_valid_comp(comps, comp)) {
       add_diagnostic(diagnostics, ERROR, line_num, result->instruction);
-      free(result->instruction);
       return;
     }
 
     if (!is_valid_jump(jumps, jump)) {
       add_diagnostic(diagnostics, ERROR, line_num, result->instruction);
-      free(result->instruction);
       return;
     }
 

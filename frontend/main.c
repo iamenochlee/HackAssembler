@@ -68,8 +68,8 @@ int main(int argc, const char **args) {
     struct Diagnostic *d = res->diagnostics->items[i];
     const char *color =
         d->type == ERROR ? "\x1b[31m" : "\x1b[33m"; // red / yellow
-    const char *type_str = d->type == ERROR ? "error" : "warning";
-    fprintf(stderr, "%s%s: line %d: %s\x1b[0m\n", color, type_str, d->line,
+    const char *type_str = d->type == ERROR ? "[ERROR]" : "[WARNING]";
+    fprintf(stderr, "%s%s line %d: %s\x1b[0m\n", color, type_str, d->line,
             d->message);
   }
 

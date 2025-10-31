@@ -1,7 +1,7 @@
 .vscode
 prog.dSYM
 bin
-test
+test/out
 guide.txt
 .DS_Store
 todo.txt
