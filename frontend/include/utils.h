@@ -10,7 +10,7 @@ void get_dest_comp_jump(char *c_instr, char *dest, char *comp, char *jump);
 
 // lines
 char *remove_whitespace(const char *line);
-void strip_line_endings(char *line);
+void sanitize_line(char *line);
 
 // todo
 int get_line(char *source, char *line, int max_line);

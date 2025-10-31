@@ -46,7 +46,7 @@ AssemblerResult *assemble(char *source) {
   while (get_line(source, line_buf, MAX_LINE)) {
 
     char *line = strdup(line_buf);
-    strip_line_endings(line);
+    sanitize_line(line);
     char *line_no_whitespace = remove_whitespace(line);
 
     if (is_empty_line(line_no_whitespace)) {

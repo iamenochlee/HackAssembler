@@ -74,12 +74,20 @@ char *remove_whitespace(const char *line) {
   return result;
 }
 
-void strip_line_endings(char *line) {
+void sanitize_line(char *line) {
   if (line == NULL)
     return;
 
   int len = strlen(line);
+  // remove newline/CR at end
   while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
     line[--len] = '\0';
+  }
+
+  // cut inline comments starting with //
+  char *comment = strstr(line, "//");
+  if (comment != NULL) {
+    *comment = '\0';
+    len = (int)strlen(line);
   }
 }
