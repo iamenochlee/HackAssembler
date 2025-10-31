@@ -66,9 +66,8 @@ int main(int argc, const char **args) {
   // Print diagnostics with colors: red for errors, yellow for warnings
   for (int i = 0; i < res->diagnostics->count; i++) {
     struct Diagnostic *d = res->diagnostics->items[i];
-    const char *color =
-        d->type == ERROR ? "\x1b[31m" : "\x1b[33m"; // red / yellow
-    const char *type_str = d->type == ERROR ? "[ERROR]" : "[WARNING]";
+    const char *color = "\x1b[31m";
+    const char *type_str = "[ERROR]";
     fprintf(stderr, "%s%s line %d: %s\x1b[0m\n", color, type_str, d->line,
             d->message);
   }

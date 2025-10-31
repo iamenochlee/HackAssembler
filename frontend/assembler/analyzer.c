@@ -13,7 +13,7 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
     return;
 
   case PARSED_INVALID:
-    add_diagnostic(diagnostics, ERROR, line_num, result->instruction);
+    add_diagnostic(diagnostics, line_num, result->instruction);
     return;
 
   case PARSED_LABEL:
@@ -55,17 +55,17 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
     get_dest_comp_jump(result->instruction, dest, comp, jump);
 
     if (!is_valid_dest(dests, dest)) {
-      add_diagnostic(diagnostics, ERROR, line_num, result->instruction);
+      add_diagnostic(diagnostics, line_num, result->instruction);
       return;
     }
 
     if (!is_valid_comp(comps, comp)) {
-      add_diagnostic(diagnostics, ERROR, line_num, result->instruction);
+      add_diagnostic(diagnostics, line_num, result->instruction);
       return;
     }
 
     if (!is_valid_jump(jumps, jump)) {
-      add_diagnostic(diagnostics, ERROR, line_num, result->instruction);
+      add_diagnostic(diagnostics, line_num, result->instruction);
       return;
     }
 

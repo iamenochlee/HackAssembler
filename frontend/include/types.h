@@ -2,7 +2,6 @@
 #define TYPES_H
 
 enum InstructionType { A_INSTR, C_INSTR };
-enum DiagnosticType { ERROR, WARNING };
 
 struct CInstruction {
   char *dest;
@@ -21,7 +20,6 @@ struct Instruction {
 };
 
 struct Diagnostic {
-  enum DiagnosticType type;
   int line;
   char *message;
 };

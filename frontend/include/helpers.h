@@ -17,8 +17,7 @@ void add_symbol(Map *symbols, const char *symbol_name, int value);
 void add_unresolved_symbol(Map *unresolved_symbols, char *symbol_name,
                            int instr_index);
 
-void add_diagnostic(Vector *diagnostics, enum DiagnosticType type, int line_num,
-                    char *message);
+void add_diagnostic(Vector *diagnostics, int line_num, char *message);
 
 void add_instruction(Vector *instructions, enum InstructionType type,
                      union InstructionEntry instruction);
