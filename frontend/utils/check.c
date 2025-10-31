@@ -20,7 +20,7 @@ int check_instruction_type(char *line) {
 }
 
 int check_if_A_numeric(char *line) {
-  int i = 1;
+  int i = 0;
   while (line[i] != '\0') {
     if ((line[i] < '0') || (line[i] > '9')) {
       return 0;

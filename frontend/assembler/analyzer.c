@@ -24,7 +24,7 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
     if (check_if_A_numeric(result->instruction)) {
 
       union InstructionEntry instr;
-      instr.aValue = atoi(result->instruction + 1);
+      instr.aValue = atoi(result->instruction);
       free(result->instruction);
       add_instruction(instructions, A_INSTR, instr);
 
