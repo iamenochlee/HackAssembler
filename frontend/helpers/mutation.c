@@ -1,7 +1,5 @@
 #include "../include/helpers.h"
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 extern int next_variable_address;
 
@@ -34,8 +32,10 @@ void add_instruction(Vector *instructions, enum InstructionType type,
 }
 
 static void edit_A_instruction(Vector *instructions, int idx, int aValue) {
-  struct Instruction *instr = instructions->items[idx];
-  instr->instruction.aValue = aValue;
+  if (idx >= 0) {
+    struct Instruction *instr = instructions->items[idx];
+    instr->instruction.aValue = aValue;
+  }
 }
 
 void add_diagnostic(Vector *diagnostics, int line_num, char *message) {

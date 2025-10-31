@@ -25,7 +25,10 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
 
       union InstructionEntry instr;
       instr.aValue = atoi(result->instruction);
-      add_instruction(instructions, A_INSTR, instr);
+
+      if (!diagnostics->count) {
+        add_instruction(instructions, A_INSTR, instr);
+      }
 
       free(result->instruction);
       return;
@@ -36,7 +39,10 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
 
       union InstructionEntry instr;
       instr.aValue = sym_value;
-      add_instruction(instructions, A_INSTR, instr);
+
+      if (!diagnostics->count) {
+        add_instruction(instructions, A_INSTR, instr);
+      }
 
       free(result->instruction);
       return;
@@ -44,9 +50,15 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
 
     union InstructionEntry instr;
     instr.aValue = DEFAULT_LABEL_VALUE;
-    add_instruction(instructions, A_INSTR, instr);
+
+    if (!diagnostics->count) {
+      add_instruction(instructions, A_INSTR, instr);
+      add_unresolved_symbol(unresolved_symbols, result->instruction,
+                            instructions->count - 1);
+    }
+
     add_unresolved_symbol(unresolved_symbols, result->instruction,
-                          instructions->count - 1);
+                          IGNORE_A_INSTR_EDIT);
     return;
   }
 
@@ -73,7 +85,10 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
     instr.cInstruction.comp = comp;
     instr.cInstruction.dest = dest;
     instr.cInstruction.jump = jump;
-    add_instruction(instructions, C_INSTR, instr);
+
+    if (!diagnostics->count) {
+      add_instruction(instructions, C_INSTR, instr);
+    }
 
     free(result->instruction);
     return;
