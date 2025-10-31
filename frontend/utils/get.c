@@ -8,10 +8,10 @@ int get_label(const char *source, char *target) {
     int length = end - start - 1;
     strncpy(target, start + 1, length);
     target[length] = '\0';
-    return 0;
+    return 1;
   }
 
-  return 1;
+  return 0;
 }
 
 void get_dest_comp_jump(char *c_instr, char *dest, char *comp, char *jump) {

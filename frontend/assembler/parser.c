@@ -1,5 +1,4 @@
 #include "../include/assembler.h"
-#include "../include/constants.h"
 #include "../include/utils.h"
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +14,7 @@ struct ParseResult parse_line(char *line) {
   }
 
   if (check_if_label(line)) {
-    char *label = malloc(MAX_LINE);
+    char *label = malloc(sizeof(line) + 1);
 
     if (!get_label(line, label)) {
       result.type = PARSED_INVALID;
@@ -29,9 +28,7 @@ struct ParseResult parse_line(char *line) {
     return result;
   }
 
-  switch (check_instruction_type(line)) {
-
-  case PARSED_A_INSTRUCTION:
+  if (!check_instruction_type(line)) {
 
     result.type = PARSED_A_INSTRUCTION;
 
@@ -41,15 +38,9 @@ struct ParseResult parse_line(char *line) {
 
     result.instruction = a_instr;
     return result;
-
-  default:
-    result.type = PARSED_C_INSTRUCTION;
-    result.instruction = line;
-    return result;
   }
 
-  result.type = PARSED_INVALID;
-  free(line);
-
+  result.type = PARSED_C_INSTRUCTION;
+  result.instruction = line;
   return result;
 }
