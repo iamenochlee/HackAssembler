@@ -14,7 +14,7 @@ struct ParseResult parse_line(char *line) {
   }
 
   if (check_if_label(line)) {
-    char *label = malloc(MAX_LINE);
+    char *label = malloc(sizeof(line) + 1);
 
     if (!get_label(line, label)) {
       result.type = PARSED_INVALID;
