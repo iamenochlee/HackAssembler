@@ -28,22 +28,14 @@ struct ParseResult parse_line(char *line) {
     return result;
   }
 
-  switch (check_instruction_type(line)) {
+  if(!check_instruction_type(line)) {
 
-  case PARSED_A_INSTRUCTION:
     result.type = PARSED_A_INSTRUCTION;
-
-    result.instruction = line;
-    return result;
-
-  default:
-    result.type = PARSED_C_INSTRUCTION;
     result.instruction = line;
     return result;
   }
-
-  result.type = PARSED_INVALID;
-  free(line);
-
+  
+  result.type = PARSED_C_INSTRUCTION;
+  result.instruction = line;
   return result;
 }
