@@ -1,4 +1,3 @@
-
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,9 +73,9 @@ char *remove_whitespace(const char *line) {
   return result;
 }
 
-void sanitize_line(char *line) {
+char *sanitize_line(char *line) {
   if (line == NULL)
-    return;
+    return NULL;
 
   int len = strlen(line);
   // remove newline/CR at end
@@ -90,4 +89,8 @@ void sanitize_line(char *line) {
     *comment = '\0';
     len = (int)strlen(line);
   }
+
+  char *line_no_whitespace = remove_whitespace(line);
+  free(line);
+  return line_no_whitespace;
 }

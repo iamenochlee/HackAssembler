@@ -4,9 +4,10 @@
 #include "../include/utils.h"
 #include <stdlib.h>
 
-void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
-                  Map *unresolved_symbols, Map *dests, Map *comps, Map *jumps,
-                  struct ParseResult *result, int line_num, int pc) {
+void analyze_line(AssemblerConfig config, Map *symbols, void *instructions,
+                  Vector *diagnostics, Map *unresolved_symbols, Map *dests,
+                  Map *comps, Map *jumps, struct ParseResult *result,
+                  int line_num, int pc) {
 
   switch (result->type) {
   case PARSED_COMMENT:
@@ -26,7 +27,7 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
       union InstructionEntry instr;
       instr.aValue = atoi(result->instruction);
 
-      if (!diagnostics->count) {
+      if (config.generate_instructions && !diagnostics->count) {
         add_instruction(instructions, A_INSTR, instr);
       }
 
@@ -40,7 +41,7 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
       union InstructionEntry instr;
       instr.aValue = sym_value;
 
-      if (!diagnostics->count) {
+      if (config.generate_instructions && !diagnostics->count) {
         add_instruction(instructions, A_INSTR, instr);
       }
 
@@ -51,14 +52,15 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
     union InstructionEntry instr;
     instr.aValue = DEFAULT_LABEL_VALUE;
 
-    if (!diagnostics->count) {
+    if (config.generate_instructions && !diagnostics->count) {
+      Vector *v_instr = (Vector *)instructions;
       add_instruction(instructions, A_INSTR, instr);
       add_unresolved_symbol(unresolved_symbols, result->instruction,
-                            instructions->count - 1);
+                            v_instr->count - 1);
     }
 
     add_unresolved_symbol(unresolved_symbols, result->instruction,
-                          IGNORE_A_INSTR_EDIT);
+                          IGNORE_INSTR_EDIT_SINCE_NO_INSTRUCTIONS);
     return;
   }
 
@@ -86,7 +88,7 @@ void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
     instr.cInstruction.dest = dest;
     instr.cInstruction.jump = jump;
 
-    if (!diagnostics->count) {
+    if (config.generate_instructions && !diagnostics->count) {
       add_instruction(instructions, C_INSTR, instr);
     }
 

@@ -23,7 +23,7 @@ void Instruction_free(void *ptr) {
   free(i);
 };
 
-AssemblerResult *assemble(char *source) {
+AssemblerResult *assemble(char *source, AssemblerConfig config) {
 
   Map *dests = Map__create(INITIAL_CAPACITY),
       *comps = Map__create(INITIAL_CAPACITY),
@@ -31,13 +31,18 @@ AssemblerResult *assemble(char *source) {
 
   init_tables(dests, comps, jumps);
 
-  Vector *diagnostics = Vector__create(Diagnostic_free, INITIAL_CAPACITY),
-         *instructions = Vector__create(Instruction_free, INITIAL_CAPACITY);
+  Vector *diagnostics = Vector__create(Diagnostic_free, INITIAL_CAPACITY);
 
-  Map *symbols = Map__create(INITIAL_CAPACITY);
+  Vector *instructions = NULL;
+
+  if (config.generate_instructions) {
+    instructions = Vector__create(Instruction_free, INITIAL_CAPACITY);
+  }
+
+  Map *symbols = Map__create(INITIAL_CAPACITY),
+      *unresolved_symbols = Map__create(INITIAL_CAPACITY);
+
   init_symbols(symbols);
-
-  Map *unresolved_symbols = Map__create(INITIAL_CAPACITY);
 
   char line_buf[MAX_LINE];
   int line_num = 1;
@@ -46,8 +51,7 @@ AssemblerResult *assemble(char *source) {
   while (get_line(source, line_buf, MAX_LINE)) {
 
     char *line = strdup(line_buf);
-    sanitize_line(line);
-    char *line_no_whitespace = remove_whitespace(line);
+    char *line_no_whitespace = sanitize_line(line);
 
     if (is_empty_line(line_no_whitespace)) {
       ++line_num;
@@ -60,13 +64,14 @@ AssemblerResult *assemble(char *source) {
         result.type == PARSED_C_INSTRUCTION)
       ++pc;
 
-    analyze_line(symbols, instructions, diagnostics, unresolved_symbols, dests,
-                 comps, jumps, &result, line_num, pc);
+    analyze_line(config, symbols, instructions, diagnostics, unresolved_symbols,
+                 dests, comps, jumps, &result, line_num, pc);
 
     ++line_num;
   }
 
-  resolve_symbols(symbols, unresolved_symbols, instructions, diagnostics);
+  resolve_symbols(config, symbols, unresolved_symbols, instructions,
+                  diagnostics);
 
   AssemblerResult *result = malloc(sizeof(AssemblerResult));
   *result = (AssemblerResult){

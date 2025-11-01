@@ -1,6 +1,11 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+typedef struct AssemblerConfig {
+  int generate_instructions;
+  int debug;
+} AssemblerConfig;
+
 enum InstructionType { A_INSTR, C_INSTR };
 
 struct CInstruction {

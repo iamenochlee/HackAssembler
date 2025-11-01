@@ -9,8 +9,7 @@ int get_label(const char *source, char *target);
 void get_dest_comp_jump(char *c_instr, char *dest, char *comp, char *jump);
 
 // lines
-char *remove_whitespace(const char *line);
-void sanitize_line(char *line);
+char *sanitize_line(char *line);
 
 // todo
 int get_line(char *source, char *line, int max_line);

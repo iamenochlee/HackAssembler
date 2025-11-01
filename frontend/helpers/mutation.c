@@ -46,8 +46,9 @@ void add_diagnostic(Vector *diagnostics, int line_num, char *message) {
   Vector__add(diagnostics, diagnos);
 };
 
-void resolve_symbols(Map *symbols, Map *unresolved_symbols,
-                     Vector *instructions, Vector *diagnostics) {
+void resolve_symbols(AssemblerConfig config, Map *symbols,
+                     Map *unresolved_symbols, Vector *instructions,
+                     Vector *diagnostics) {
 
   for (int i = 0; i < unresolved_symbols->size; i++) {
 
@@ -58,7 +59,10 @@ void resolve_symbols(Map *symbols, Map *unresolved_symbols,
       aValue = next_variable_address - 1;
     }
 
-    edit_A_instruction(instructions, unresolved_symbols->data[i].value, aValue);
+    if (config.generate_instructions) {
+      edit_A_instruction(instructions, unresolved_symbols->data[i].value,
+                         aValue);
+    }
   }
 
   Map__free(unresolved_symbols);

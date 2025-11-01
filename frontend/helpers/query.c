@@ -1,4 +1,4 @@
-#include "../include/helpers.h"
+#include "../include/structures.h"
 
 int get_symbol_value(Map *symbols, const char *label) {
   int res = Map__find(symbols, label);

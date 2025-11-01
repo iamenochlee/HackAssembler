@@ -4,15 +4,6 @@
 #include "structures.h"
 #include "types.h"
 
-typedef struct AssemblerResult {
-  Vector *instructions;
-  Vector *diagnostics;
-  Map *symbols;
-  Map *dests, *comps, *jumps;
-} AssemblerResult;
-
-AssemblerResult *assemble(char *source);
-
 enum LineType {
   PARSED_COMMENT,
   PARSED_INVALID,
@@ -29,9 +20,21 @@ struct ParseResult {
   };
 };
 
+typedef struct AssemblerResult {
+  Vector *instructions;
+  Vector *diagnostics;
+  Map *symbols;
+  Map *dests, *comps, *jumps;
+} AssemblerResult;
+
+// NOTE: if `config.generate_instructions` is false,
+// `AssemblerResult.instructions` will be NULL
+AssemblerResult *assemble(char *source, AssemblerConfig config);
+
 struct ParseResult parse_line(char *line);
-void analyze_line(Map *symbols, Vector *instructions, Vector *diagnostics,
-                  Map *unresolved_symbols, Map *dests, Map *comps, Map *jumps,
-                  struct ParseResult *result, int line_num, int pc);
+void analyze_line(AssemblerConfig config, Map *symbols, void *instructions,
+                  Vector *diagnostics, Map *unresolved_symbols, Map *dests,
+                  Map *comps, Map *jumps, struct ParseResult *result,
+                  int line_num, int pc);
 
 #endif

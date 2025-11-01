@@ -22,7 +22,8 @@ void add_diagnostic(Vector *diagnostics, int line_num, char *message);
 void add_instruction(Vector *instructions, enum InstructionType type,
                      union InstructionEntry instruction);
 
-void resolve_symbols(Map *symbols, Map *unresolved_symbols,
-                     Vector *instructions, Vector *diagnostics);
+void resolve_symbols(AssemblerConfig config, Map *symbols,
+                     Map *unresolved_symbols, Vector *instructions,
+                     Vector *diagnostics);
 
 #endif
