@@ -16,33 +16,6 @@ An assembler for the Hack computer (Nand2Tetris). It parses Hack assembly langua
   - Variable allocation (auto-assigns starting at RAM[16])
 - **Error Diagnostics**: Line-by-line error reporting with clear messages
 
-### Building
-
-```bash
-# Build the frontend assembler
-cd frontend
-make
-
-# Or build from root
-make
-```
-
-### Usage
-
-```bash
-cd frontend
-./bin/prog <input.asm> <generate_instructions>
-```
-
-**Arguments:**
-- `input.asm`: Path to Hack assembly source file
-- `generate_instructions`: `1` to generate instructions, `0` for syntax checking only
-
-**Example:**
-```bash
-cd frontend
-./bin/prog test/asm/Max.asm 1
-```
 
 ### Project Structure
 
@@ -70,8 +43,6 @@ test/asm/           # Test assembly files
 
 ### API
 
-#### Main Assembly Function
-
 ```c
 #include "assembler.h"
 
@@ -87,6 +58,9 @@ AssemblerResult result = assemble(source_code, config);
 // - result.diagnostics: Vector of error messages
 // - result.symbols: Resolved symbol table
 // - dests, comps, and jump table
+
+// free after use
+AssemblerResult__free(result);
 ```
 
 
