@@ -69,7 +69,7 @@ Test files are provided in `test/asm/`:
 ### Implementation Notes
 
 - **Memory Management**: The assembler uses malloc/free throughout. All allocated memory is properly freed via `AssemblerResult__free()`
-- **Error Handling**: Invalid instructions are caught during parsing/validation and reported with line numbers, when diagnostics->size > 1 new instructions no longer get added
+- **Error Handling**: Invalid instructions are caught during parsing/validation and reported with line numbers, when `AssemblerResult.diagnostics->size > 1` new instructions are longer added
 
 ### License
 
