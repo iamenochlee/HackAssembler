@@ -25,9 +25,9 @@ void Instruction_free(void *ptr) {
 
 AssemblerResult assemble(char *source, AssemblerConfig config) {
 
-  Map *dests = Map__create(INITIAL_CAPACITY, INITIAL_DEST_COUNT),
-      *comps = Map__create(INITIAL_CAPACITY, INITIAL_COMP_COUNT),
-      *jumps = Map__create(INITIAL_CAPACITY, INITIAL_JUMP_COUNT);
+  Map *dests = Map__create(INITIAL_CAPACITY, INITIAL_DESTS_COUNT),
+      *comps = Map__create(INITIAL_CAPACITY, INITIAL_COMPS_COUNT),
+      *jumps = Map__create(INITIAL_CAPACITY, INITIAL_JUMPS_COUNT);
 
   Map *symbols = Map__create(INITIAL_CAPACITY, INITIAL_SYMBOLS_COUNT);
 
