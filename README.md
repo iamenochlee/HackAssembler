@@ -2,20 +2,16 @@
 
 An assembler for the Hack computer (Nand2Tetris). It parses Hack assembly language and produces 16-bit Hack machine code.
 
-### Features
+### Hack Assembly Language Rules
 
-- **A-Instructions**: Supports numeric addresses and symbol references
-- **C-Instructions**: Validates and parses dest=comp;jump format
-  - Supports all valid dest combinations (M, D, A, MD, AM, AD, AMD)
-  - Supports all 28 computation operations (0, 1, -1, D, A, M, D+1, A-1, etc.)
-  - Supports all jump conditions (JGT, JEQ, JGE, JLT, JNE, JLE, JMP)
-  - Validates that if dest is absent, jump must be present
-- **Symbol Resolution**: 
-  - Predefined symbols (R0-R15, SP, LCL, ARG, THIS, THAT, SCREEN, KBD)
-  - Label definitions (LOOP), (END), etc.
-  - Variable allocation (auto-assigns starting at RAM[16])
-- **Error Diagnostics**: Line-by-line error reporting with clear messages
-
+1. **A-Instructions**: `@value` where value is a number or symbol
+2. **C-Instructions**: `dest=comp;jump`
+   - `comp` is always required
+   - If `dest` is empty, `jump` must be present (e.g., `0;JMP`)
+   - If `jump` is empty, `dest` can be present (e.g., `D=M`)
+3. **Labels**: `(LABEL_NAME)` - must be defined before use
+4. **Comments**: `//` inline or whole line
+5. **Whitespace**: Ignored
 
 ### Project Structure
 
@@ -62,18 +58,6 @@ AssemblerResult result = assemble(source_code, config);
 // free after use
 AssemblerResult__free(result);
 ```
-
-
-### Assembly Language Rules
-
-1. **A-Instructions**: `@value` where value is a number or symbol
-2. **C-Instructions**: `dest=comp;jump`
-   - `comp` is always required
-   - If `dest` is empty, `jump` must be present (e.g., `0;JMP`)
-   - If `jump` is empty, `dest` can be present (e.g., `D=M`)
-3. **Labels**: `(LABEL_NAME)` - must be defined before use
-4. **Comments**: `//` inline or whole line
-5. **Whitespace**: Ignored
 
 ### Testing
 
