@@ -7,7 +7,7 @@ The frontend focuses on parsing, symbol handling (predefined symbols, labels, va
 
 ```c
 #include "assembler.h"
-AssemblerResult *assemble(char *source, AssemblerConfig config);
+AssemblerResult assemble(char *source, AssemblerConfig config);
 ```
 
 On success it returns an `AssemblerResult` with:

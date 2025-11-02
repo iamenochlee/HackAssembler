@@ -23,7 +23,7 @@ void Instruction_free(void *ptr) {
   free(i);
 };
 
-AssemblerResult *assemble(char *source, AssemblerConfig config) {
+AssemblerResult assemble(char *source, AssemblerConfig config) {
 
   Map *dests = Map__create(INITIAL_CAPACITY),
       *comps = Map__create(INITIAL_CAPACITY),
@@ -55,6 +55,7 @@ AssemblerResult *assemble(char *source, AssemblerConfig config) {
 
     if (is_empty_line(line_no_whitespace)) {
       ++line_num;
+      free(line_no_whitespace);
       continue;
     }
 
@@ -73,8 +74,7 @@ AssemblerResult *assemble(char *source, AssemblerConfig config) {
   resolve_symbols(config, symbols, unresolved_symbols, instructions,
                   diagnostics);
 
-  AssemblerResult *result = malloc(sizeof(AssemblerResult));
-  *result = (AssemblerResult){
+  AssemblerResult result = (AssemblerResult){
       .instructions = instructions,
       .diagnostics = diagnostics,
       .symbols = symbols,
@@ -85,3 +85,16 @@ AssemblerResult *assemble(char *source, AssemblerConfig config) {
 
   return result;
 };
+
+void AssemblerResult__free(AssemblerResult *result, AssemblerConfig config) {
+
+  if (config.generate_instructions) {
+    Vector__free(result->instructions);
+  }
+  Vector__free(result->diagnostics);
+
+  Map__free(result->symbols);
+  Map__free(result->dests);
+  Map__free(result->comps);
+  Map__free(result->jumps);
+}

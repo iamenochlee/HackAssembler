@@ -29,7 +29,8 @@ typedef struct AssemblerResult {
 
 // NOTE: if `config.generate_instructions` is false,
 // `AssemblerResult.instructions` will be NULL
-AssemblerResult *assemble(char *source, AssemblerConfig config);
+AssemblerResult assemble(char *source, AssemblerConfig config);
+void AssemblerResult__free(AssemblerResult *result, AssemblerConfig config);
 
 struct ParseResult parse_line(char *line);
 void analyze_line(AssemblerConfig config, Map *symbols, void *instructions,

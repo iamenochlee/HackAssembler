@@ -57,6 +57,7 @@ void analyze_line(AssemblerConfig config, Map *symbols, void *instructions,
       add_instruction(instructions, A_INSTR, instr);
       add_unresolved_symbol(unresolved_symbols, result->instruction,
                             v_instr->count - 1);
+      return;
     }
 
     add_unresolved_symbol(unresolved_symbols, result->instruction,
@@ -68,28 +69,29 @@ void analyze_line(AssemblerConfig config, Map *symbols, void *instructions,
     char *dest = malloc(4), *comp = malloc(4), *jump = malloc(4);
     get_dest_comp_jump(result->instruction, dest, comp, jump);
 
-    if (!is_valid_dest(dests, dest)) {
-      add_diagnostic(diagnostics, line_num, result->instruction);
-      return;
-    }
+    int valid_dest = is_valid_dest(dests, dest);
+    int valid_comp = is_valid_comp(comps, comp);
+    int valid_jump = is_valid_jump(jumps, jump);
 
-    if (!is_valid_comp(comps, comp)) {
+    if (!valid_dest || !valid_comp || !valid_jump) {
       add_diagnostic(diagnostics, line_num, result->instruction);
-      return;
-    }
-
-    if (!is_valid_jump(jumps, jump)) {
-      add_diagnostic(diagnostics, line_num, result->instruction);
+      free(dest);
+      free(comp);
+      free(jump);
       return;
     }
 
     union InstructionEntry instr;
-    instr.cInstruction.comp = comp;
     instr.cInstruction.dest = dest;
+    instr.cInstruction.comp = comp;
     instr.cInstruction.jump = jump;
 
     if (config.generate_instructions && !diagnostics->count) {
       add_instruction(instructions, C_INSTR, instr);
+    } else {
+      free(dest);
+      free(comp);
+      free(jump);
     }
 
     free(result->instruction);

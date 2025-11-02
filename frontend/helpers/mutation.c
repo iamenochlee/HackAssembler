@@ -3,11 +3,11 @@
 
 extern int next_variable_address;
 
-void add_symbol(Map *symbols, const char *label, int value) {
+void add_symbol(Map *symbols, char *label, int value) {
   Map__add(symbols, label, value);
 }
 
-static int add_variable(Map *symbols, const char *variable_name) {
+static int add_variable(Map *symbols, char *variable_name) {
 
   int allocated_address = next_variable_address++;
   Map__add(symbols, variable_name, allocated_address);

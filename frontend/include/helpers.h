@@ -13,7 +13,7 @@ int is_valid_jump(Map *, char *jump);
 void init_tables(Map *dests, Map *comps, Map *jumps);
 void init_symbols(Map *symbols);
 
-void add_symbol(Map *symbols, const char *symbol_name, int value);
+void add_symbol(Map *symbols, char *symbol_name, int value);
 void add_unresolved_symbol(Map *unresolved_symbols, char *symbol_name,
                            int instr_index);
 

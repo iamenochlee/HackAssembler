@@ -29,17 +29,12 @@ static void Map__init(Map *map, int capacity) {
   map->data = malloc(sizeof(struct Pair) * capacity);
 }
 
-int Map__add(Map *map, const char *key, int value) {
+int Map__add(Map *map, char *key, int value) {
   if (map->size >= map->capacity) {
     grow_map(map);
   }
 
-  map->data[map->size].key = malloc(strlen(key) + 1);
-  if (map->data[map->size].key == NULL) {
-    return 1;
-  }
-
-  strcpy(map->data[map->size].key, key);
+  map->data[map->size].key = key;
   map->data[map->size].value = value;
   map->size++;
   return 0;
@@ -74,4 +69,6 @@ void Map__free(Map *map) {
   }
   map->size = 0;
   map->capacity = 0;
+
+  free(map);
 }

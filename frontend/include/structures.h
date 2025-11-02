@@ -13,7 +13,7 @@ typedef struct {
 } Map;
 
 int Map__find(Map *map, const char *key);
-int Map__add(Map *map, const char *key, int value);
+int Map__add(Map *map, char *key, int value);
 void Map__free(Map *map);
 Map *Map__create(int capacity);
 
