@@ -9,7 +9,7 @@ An assembler for the Hack computer (Nand2Tetris). It parses Hack assembly langua
    - `comp` is always required
    - If `dest` is empty, `jump` must be present (e.g., `0;JMP`)
    - If `jump` is empty, `dest` can be present (e.g., `D=M`)
-3. **Labels**: `(LABEL_NAME)` - must be defined before use
+3. **Labels**: `(LABEL_NAME)` - may be defined before use
 4. **Comments**: `//` inline or whole line
 5. **Whitespace**: Ignored
 
