@@ -14,11 +14,13 @@ struct ParseResult parse_line(char *line) {
   }
 
   if (check_if_label(line)) {
-    char *label = malloc(sizeof(line) + 1);
+    // accounting for () that will be removed
+    char *label = malloc(strlen(line) - 1);
 
     if (!get_label(line, label)) {
+      free(label);
       result.type = PARSED_INVALID;
-      free(line);
+      result.instruction = line;
       return result;
     };
 

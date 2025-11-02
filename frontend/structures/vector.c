@@ -3,7 +3,7 @@
 
 Vector *Vector__create(FreeFn free_fn, int capacity) {
   Vector *v = malloc(sizeof(Vector));
-  v->count = 0;
+  v->size = 0;
   v->capacity = capacity;
   v->items = malloc(sizeof(void *) * v->capacity);
   v->free_fn = free_fn;
@@ -16,15 +16,15 @@ static void vector_grow(Vector *v) {
 }
 
 void Vector__add(Vector *v, const void *element) {
-  if (v->count == v->capacity)
+  if (v->size == v->capacity)
     vector_grow(v);
 
-  v->items[v->count++] = (void *)element;
+  v->items[v->size++] = (void *)element;
 }
 
 void Vector__free(Vector *v) {
   if (v->free_fn) {
-    for (int i = 0; i < v->count; i++)
+    for (int i = 0; i < v->size; i++)
       v->free_fn(v->items[i]);
   }
   free(v->items);

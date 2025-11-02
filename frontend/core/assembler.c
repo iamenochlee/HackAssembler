@@ -25,24 +25,24 @@ void Instruction_free(void *ptr) {
 
 AssemblerResult assemble(char *source, AssemblerConfig config) {
 
-  Map *dests = Map__create(INITIAL_CAPACITY),
-      *comps = Map__create(INITIAL_CAPACITY),
-      *jumps = Map__create(INITIAL_CAPACITY);
+  Map *dests = Map__create(INITIAL_CAPACITY, INITIAL_DEST_COUNT),
+      *comps = Map__create(INITIAL_CAPACITY, INITIAL_COMP_COUNT),
+      *jumps = Map__create(INITIAL_CAPACITY, INITIAL_JUMP_COUNT);
+
+  Map *symbols = Map__create(INITIAL_CAPACITY, INITIAL_SYMBOLS_COUNT);
 
   init_tables(dests, comps, jumps);
+  init_symbols(symbols);
 
   Vector *diagnostics = Vector__create(Diagnostic_free, INITIAL_CAPACITY);
 
   Vector *instructions = NULL;
-
   if (config.generate_instructions) {
     instructions = Vector__create(Instruction_free, INITIAL_CAPACITY);
   }
 
-  Map *symbols = Map__create(INITIAL_CAPACITY),
-      *unresolved_symbols = Map__create(INITIAL_CAPACITY);
-
-  init_symbols(symbols);
+  Map *unresolved_symbols =
+      Map__create(INITIAL_CAPACITY, DEFAULT_START_FREE_INDEX);
 
   char line_buf[MAX_LINE];
   int line_num = 1;
@@ -50,16 +50,14 @@ AssemblerResult assemble(char *source, AssemblerConfig config) {
 
   while (get_line(source, line_buf, MAX_LINE)) {
 
-    char *line = strdup(line_buf);
-    char *line_no_whitespace = sanitize_line(line);
-
-    if (is_empty_line(line_no_whitespace)) {
+    char *line = sanitize_line(line_buf);
+    if (is_empty_line(line)) {
       ++line_num;
-      free(line_no_whitespace);
+      free(line);
       continue;
     }
 
-    struct ParseResult result = parse_line(line_no_whitespace);
+    struct ParseResult result = parse_line(line);
 
     if (result.type == PARSED_A_INSTRUCTION ||
         result.type == PARSED_C_INSTRUCTION)
@@ -74,7 +72,7 @@ AssemblerResult assemble(char *source, AssemblerConfig config) {
   resolve_symbols(config, symbols, unresolved_symbols, instructions,
                   diagnostics);
 
-  AssemblerResult result = (AssemblerResult){
+  AssemblerResult result = {
       .instructions = instructions,
       .diagnostics = diagnostics,
       .symbols = symbols,

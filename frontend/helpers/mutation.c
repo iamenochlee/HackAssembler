@@ -1,5 +1,6 @@
 #include "../include/helpers.h"
 #include <stdlib.h>
+#include <string.h>
 
 extern int next_variable_address;
 
@@ -55,7 +56,11 @@ void resolve_symbols(AssemblerConfig config, Map *symbols,
     int aValue = get_symbol_value(symbols, unresolved_symbols->data[i].key);
     if (aValue == -1) {
 
-      add_variable(symbols, unresolved_symbols->data[i].key);
+      int len = strlen(unresolved_symbols->data[i].key) + 1;
+      char *key = malloc(len);
+      strcpy(key, unresolved_symbols->data[i].key);
+
+      add_variable(symbols, key);
       aValue = next_variable_address - 1;
     }
 

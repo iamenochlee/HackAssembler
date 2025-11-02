@@ -91,6 +91,5 @@ char *sanitize_line(char *line) {
   }
 
   char *line_no_whitespace = remove_whitespace(line);
-  free(line);
   return line_no_whitespace;
 }

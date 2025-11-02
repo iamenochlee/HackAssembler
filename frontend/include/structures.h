@@ -9,19 +9,20 @@ struct Pair {
 typedef struct {
   int size;
   int capacity;
+  int start_free_index;
   struct Pair *data;
 } Map;
 
 int Map__find(Map *map, const char *key);
 int Map__add(Map *map, char *key, int value);
 void Map__free(Map *map);
-Map *Map__create(int capacity);
+Map *Map__create(int capacity, int start_free_index);
 
 typedef void (*FreeFn)(void *element);
 
 typedef struct {
   void **items;
-  int count;
+  int size;
   int capacity;
   FreeFn free_fn;
 } Vector;

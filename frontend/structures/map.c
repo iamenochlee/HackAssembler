@@ -23,9 +23,10 @@ static void grow_map(Map *map) {
   // }
 }
 
-static void Map__init(Map *map, int capacity) {
+static void Map__init(Map *map, int capacity, int start_free_index) {
   map->capacity = capacity;
   map->size = 0;
+  map->start_free_index = start_free_index;
   map->data = malloc(sizeof(struct Pair) * capacity);
 }
 
@@ -39,10 +40,10 @@ int Map__add(Map *map, char *key, int value) {
   map->size++;
   return 0;
 }
-Map *Map__create(int capacity) {
+Map *Map__create(int capacity, int start_free) {
 
   Map *map = malloc(sizeof(Map));
-  Map__init(map, capacity);
+  Map__init(map, capacity, start_free);
 
   return map;
 };
@@ -59,16 +60,13 @@ int Map__find(Map *map, const char *key) {
 void Map__free(Map *map) {
   if (map->data != NULL) {
     // Free individual map keys
-    for (int i = 0; i < map->size; i++) {
+    for (int i = map->start_free_index; i < map->size; i++) {
       if (map->data[i].key != NULL) {
         free(map->data[i].key);
       }
     }
     free(map->data);
-    map->data = NULL;
   }
-  map->size = 0;
-  map->capacity = 0;
 
   free(map);
 }

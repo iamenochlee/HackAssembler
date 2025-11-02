@@ -1,7 +1,7 @@
 #include "../include/helpers.h"
 #include "../include/structures.h"
 
-void init_tables(Map *dests, Map *comps, Map *jumps) {
+inline void init_tables(Map *dests, Map *comps, Map *jumps) {
   // dests
   Map__add(dests, "", 0);
   Map__add(dests, "M", 1);
@@ -53,7 +53,7 @@ void init_tables(Map *dests, Map *comps, Map *jumps) {
   Map__add(comps, "D|M", 85);
 }
 
-void init_symbols(Map *symbols) {
+inline void init_symbols(Map *symbols) {
   add_symbol(symbols, "R0", 0);
   add_symbol(symbols, "R1", 1);
   add_symbol(symbols, "R2", 2);
