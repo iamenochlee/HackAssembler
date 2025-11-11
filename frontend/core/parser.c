@@ -22,7 +22,15 @@ struct ParseResult parse_line(char *line) {
       result.type = PARSED_INVALID;
       result.instruction = line;
       return result;
-    };
+    }
+
+    // Empty labels () are invalid
+    if (label[0] == '\0') {
+      free(label);
+      result.type = PARSED_INVALID;
+      result.instruction = line;
+      return result;
+    }
 
     result.type = PARSED_LABEL;
     result.label = label;

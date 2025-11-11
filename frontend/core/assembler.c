@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int next_variable_address = 16;
-
 void Diagnostic_free(void *ptr) {
   struct Diagnostic *d = ptr;
   free(d->message);
@@ -24,6 +22,9 @@ void Instruction_free(void *ptr) {
 };
 
 AssemblerResult assemble(char *source, AssemblerConfig config) {
+
+  // Variable address counter, starts at 16 for each new assembly
+  int next_variable_address = 16;
 
   Map *dests = Map__create(INITIAL_CAPACITY, INITIAL_DESTS_COUNT),
       *comps = Map__create(INITIAL_CAPACITY, INITIAL_COMPS_COUNT),
@@ -48,7 +49,8 @@ AssemblerResult assemble(char *source, AssemblerConfig config) {
   int line_num = 1;
   int pc = 0;
 
-  while (get_line(source, line_buf, MAX_LINE)) {
+  LineReader reader = create_line_reader(source);
+  while (get_line(&reader, line_buf, MAX_LINE)) {
 
     char *line = sanitize_line(line_buf);
     if (is_empty_line(line)) {
@@ -70,7 +72,7 @@ AssemblerResult assemble(char *source, AssemblerConfig config) {
   }
 
   resolve_symbols(config, symbols, unresolved_symbols, instructions,
-                  diagnostics);
+                  diagnostics, &next_variable_address);
 
   AssemblerResult result = {
       .instructions = instructions,

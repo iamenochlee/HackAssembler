@@ -2,15 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int next_variable_address;
-
 void add_symbol(Map *symbols, char *label, int value) {
   Map__add(symbols, label, value);
 }
 
-static int add_variable(Map *symbols, char *variable_name) {
+static int add_variable(Map *symbols, char *variable_name,
+                        int *next_variable_address) {
 
-  int allocated_address = next_variable_address++;
+  int allocated_address = (*next_variable_address)++;
   Map__add(symbols, variable_name, allocated_address);
 
   return allocated_address;
@@ -49,7 +48,7 @@ void add_diagnostic(Vector *diagnostics, int line_num, char *message) {
 
 void resolve_symbols(AssemblerConfig config, Map *symbols,
                      Map *unresolved_symbols, Vector *instructions,
-                     Vector *diagnostics) {
+                     Vector *diagnostics, int *next_variable_address) {
 
   for (int i = 0; i < unresolved_symbols->size; i++) {
 
@@ -60,8 +59,7 @@ void resolve_symbols(AssemblerConfig config, Map *symbols,
       char *key = malloc(len);
       strcpy(key, unresolved_symbols->data[i].key);
 
-      add_variable(symbols, key);
-      aValue = next_variable_address - 1;
+      aValue = add_variable(symbols, key, next_variable_address);
     }
 
     if (config.generate_instructions) {

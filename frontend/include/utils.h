@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include "types.h"
+#include <stddef.h>
 
 // checks
 int check_if_comment(char *line);
@@ -16,8 +17,9 @@ struct CInstruction parse_c_instruction(const char *c_instr);
 // lines
 char *sanitize_line(char *line);
 
-// todo
-int get_line(char *source, char *line, int max_line);
+// Line reader operations
+LineReader create_line_reader(const char *source);
+int get_line(LineReader *reader, char *line, size_t max_line);
 int is_empty_line(char *line);
 
 #endif

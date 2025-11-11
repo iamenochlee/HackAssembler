@@ -24,6 +24,6 @@ void add_instruction(Vector *instructions, enum InstructionType type,
 
 void resolve_symbols(AssemblerConfig config, Map *symbols,
                      Map *unresolved_symbols, Vector *instructions,
-                     Vector *diagnostics);
+                     Vector *diagnostics, int *next_variable_address);
 
 #endif
